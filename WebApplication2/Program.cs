@@ -15,13 +15,14 @@ app.MapPost("/register", (User user) =>
 
 app.MapPost("/login", (Loginbody body) =>
 {
-    var user = users.Find(u => u.login == body.login && u.password == body.password);
-    if (user.login == body.login)
-        return "True";
+    var user = users.Find(u => u.login == body.login);
+    if (user == null)
+        return "Пользователь не найден";
+    if (user.password == body.password)
+        return "Вход выполнен";
     else
-    {
-        return "False";
-    }
+        return "Пароль неверный";
+        
 });
 
 app.UseSwagger();
@@ -38,6 +39,15 @@ class User
 
 }
 
+class Employee : User
+{
+    public int salary { get; set; }
+}
+
+class Client : User
+{
+    public int discount { get; set; }
+}
 class Loginbody
 {
     public string login { get; set; }
