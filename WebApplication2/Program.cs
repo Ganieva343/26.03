@@ -1,3 +1,5 @@
+using System.Data.Entity;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -7,9 +9,31 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapPost("/register", (User user) =>
+app.MapPost("/register", (Client user) =>
 {
-    users.Add(user);
+// В этой точке непосредственно начинается работа с Entity Framework
+
+    // Создать объект контекста
+    SampleContext context = new SampleContext();
+
+    // Вставить данные в таблицу Customers с помощью LINQ
+    context.Clients.Add(user);
+
+    // Сохранить изменения в БД
+    context.SaveChanges();
+    return "Hello";
+});
+app.MapPost("/admin", (Employee employee)=>
+{// В этой точке непосредственно начинается работа с Entity Framework
+
+    // Создать объект контекста
+    SampleContext context = new SampleContext();
+
+    // Вставить данные в таблицу Customers с помощью LINQ
+    context.Employees.Add(employee);
+
+    // Сохранить изменения в БД
+    context.SaveChanges();
     return "Hello";
 });
 
@@ -31,24 +55,35 @@ app.UseSwaggerUI();
 app.Run();
 
 
-class User
+public class User
 {
     public int id { get; set; }
     public string login { get; set; }
     public string password { get; set; }
 
 }
+public class SampleContext : DbContext
+{
+    // Имя будущей базы данных можно указать через
+    // вызов конструктора базового класса
+    public SampleContext() : base("MyOrder")
+    { }
 
-class Employee : User
+    // Отражение таблиц базы данных на свойства с типом DbSet
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<Client> Clients { get; set; }
+}
+
+public class Employee : User
 {
     public int salary { get; set; }
 }
 
-class Client : User
+public class Client : User
 {
     public int discount { get; set; }
 }
-class Loginbody
+public class Loginbody
 {
     public string login { get; set; }
     public string password { get; set; }
